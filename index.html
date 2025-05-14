@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <style>
+        * {
+            font-family: Ubuntu;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            font-size: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-buttons button {
+            margin-left: 10px;
+        }
+
+        .search {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        input[type="search"] {
+            height: 30px;
+            width: 300px;
+        }
+
+        button.srch {
+            height: 30px;
+            width: 60px;
+        }
+
+        h1.main-heading {
+            margin-top: 70px;
+            text-align: center;
+            font-size: 70px;
+            margin-bottom: 1px;
+        }
+
+        p.main-sub-head {
+            margin-top: 1px;
+            text-align: center;
+        }
+
+        .center-container {
+            display: flex;
+            justify-content: center;   
+            align-items: center;                   
+        }
+
+        .textbox {
+            margin-top: 50px;
+            width: 650px;
+            height: 80px;
+            border: 2px solid;
+            text-align: center;
+            padding: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 class="logo">Panhinda</h1>
+        <nav class="nav-links">
+          <a href="#">Home</a>
+          <a href="#">Articles</a>
+          <a href="#">Create</a>
+        </nav>
+        <div class="auth-buttons">
+          <button>Login</button>
+          <button>Signup</button>
+        </div>
+    </div>
+
+    <form action="/search" method="GET" class="search">
+        <input type="search" name="q" placeholder="Search articles..." />
+        <button type="submit" class="srch">Search</button>
+    </form>
+
+    <h1 class="main-heading">Welcome to Panhinda</h1>
+    <p class="main-sub-head">A Sri Lankan Community</p>
+
+    <div class="center-container">
+        <div class="textbox">
+            <p>Malith hithan inne u hena crya kiyl. Punchi malith lesada muuva hadunnanawa. Cryma thejasak widyamana krnne pora. bla bla bla bla bla huuuu huuuuuu</p>
+        </div>
+    </div>
+    
+
+    </div>
+      
+    
+</body>
+</html>
