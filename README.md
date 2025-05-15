@@ -9,3 +9,5 @@
 - 🔍 Search for blogs by keywords
 - 🔐 User authentication (Login/Logout)
 - 🧑 User-friendly interface
+
+- ## 📸 Screenshots
