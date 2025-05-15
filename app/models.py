@@ -5,7 +5,7 @@ import sqlalchemy.orm as so
 from app import db
 
 
-class GenderEnum:
+class GenderEnum(str, sa.Enum):
     M = 'm'
     F = 'f'
 
