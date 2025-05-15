@@ -1,36 +1,38 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <!--<link rel="stylesheet" href="{{url_for('static', filename='css/font.css')}}">-->
+    <!--<link rel="stylesheet" href="{{url_for('static', filename='css/reset.css')}}">-->
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-
-    <title>Panhinda</title>
+    {% block head %}{% endblock %}
+    <title>Demo</title>
 </head>
 
 <body>
 
-    <nav>
-        <b>Welcome to Panhinda:</b>&nbsp;&nbsp;
-        <a href="/">Home</a>
-        <a href="/articles">Articles</a>
-        <a href="/create">Create</a>&nbsp;&nbsp;
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        <hr>
-    </nav>
+    <div class="navbar">
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+        <h1 class="logo">Panhinda</h1>
+
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/articles">Articles</a>
+            <a href="/create">Create</a>
+        </nav>
+
+        <div class="auth-buttons">
+            <button><a href="/login">Login</a></button>
+            <button><a href="/register">Signup</a></button>
+        </div>
+
+    </div>
+
+    <form action="/search" method="GET" class="search">
+        <input type="search" name="q" placeholder="Search articles..." />
+        <button type="submit" class="srch">Search</button>
+    </form>
 
     {% block body %}{% endblock %}
 

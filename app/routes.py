@@ -4,7 +4,7 @@ from app.froms import LoginForm, RegisterationForm
 
 
 @app.route("/", methods=["GET"])
-def view_index():
+def index():
     if request.method == "GET":
         return render_template("index.html")
     else:
@@ -36,12 +36,14 @@ def view_create_article():
 
 
 @app.route("/login", methods=["GET", "POST"])
-def view_login():
+def login():
 
     form = LoginForm()
 
     if form.validate_on_submit():
+        
         flash(f"Login requested for user {form.username.data}, remember_me={form.remember_me.data}")
+        
         return redirect(url_for('view_index'))
     
 
@@ -49,7 +51,7 @@ def view_login():
 
 
 @app.route("/register", methods=["GET", "POST"])
-def view_signup():
+def register():
 
     form = RegisterationForm()
 
