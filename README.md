@@ -10,4 +10,4 @@
 - 🔐 User authentication (Login/Logout)
 - 🧑 User-friendly interface
 
-- ## 📸 Screenshots
+## 📸 Screenshots
