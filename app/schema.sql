@@ -1,15 +1,3 @@
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS article;
-DROP TABLE IF EXISTS human_verification_query;
-DROP TABLE IF EXISTS human_verification_query_answer;
-DROP TABLE IF EXISTS article_comment;
-DROP TABLE IF EXISTS article_like;
-DROP TABLE IF EXISTS category;
-DROP TABLE IF EXISTS sub_category;
-DROP TABLE IF EXISTS article_category;
-DROP TABLE IF EXISTS user_interest;
-
-
 CREATE TABLE
     IF NOT EXISTS user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +11,7 @@ CREATE TABLE
         password VARCHAR(200) NOT NULL,
         profile_picture_uri VARCHAR(50) NULL
     );
+
 
 CREATE TABLE
     IF NOT EXISTS human_verification_query (

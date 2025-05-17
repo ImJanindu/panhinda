@@ -7,4 +7,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("DATABASE_URI") or f"sqlite:///{os.path.join(basedir, 'app.db')}"
     )
-
+    SESSION_PERMANENT=False
+    SESSION_TYPE='filesystem'
+    USER_DATA_PATH=os.path.join(basedir, 'static\\user_data')
