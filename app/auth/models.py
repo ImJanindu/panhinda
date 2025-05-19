@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Optional
 from enum import Enum as Enum_
 from sqlalchemy import String, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -23,7 +24,7 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(32))
 
     date_of_birth: Mapped[date] = mapped_column(nullable=False)
-
+ 
     gender: Mapped[GenderEnum] = mapped_column(Enum(GenderEnum), nullable=False)
 
     email: Mapped[str] = mapped_column(
@@ -42,9 +43,9 @@ class User(db.Model):
 
     password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
 
-    profile_picture_uri: Mapped[str] = mapped_column(String(512), nullable=True)
+    profile_picture_uri: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
 
-    # Reletionships
+    # Relationships
 
     articles: Mapped[list["Article"]] = relationship(back_populates="author")
     interests: Mapped[list["UserInterest"]] = relationship(back_populates="user")
@@ -78,7 +79,7 @@ class User(db.Model):
         self.phone_number_last_digits = phone_number_last_digits
         self.username = username
         self.password_hash = pwd
-        self.profile_picture_uri = profile_picture_uri
+        self.profile_picture_uri = profile_picture_uri if profile_picture_uri is not None else "static/user_data/default.png"
 
 
 class UserInterest(db.Model):

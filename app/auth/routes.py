@@ -1,7 +1,9 @@
 from app import app
-from flask import request, render_template, redirect, flash, url_for
+from flask import request, render_template, redirect, flash, url_for, blueprints
 
 from app.froms import LoginForm, RegisterationForm
+
+auth = blueprints.Blueprint('auth', url_prefix='/auth')
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -12,7 +14,7 @@ def login():
         
         flash(f"Login requested for user {form.username.data}, remember_me={form.remember_me.data}")
         
-        return redirect(url_for('view_index'))
+        return redirect(url_for('index'))
     
 
     return render_template("login.html", form=form, **form.data)
@@ -24,6 +26,6 @@ def register():
     form = RegisterationForm()
 
     if form.validate_on_submit():
-        return redirect('/login')
+        return redirect(url_for('auth.login'))
 
     return render_template("register.html", form=form)

@@ -11,4 +11,9 @@ migrate = Migrate(app, db)
 
 from app import routes
 from app.auth.models import *
-from app.articles.models import *
+from app.article.models import *
+
+from app import auth, article
+
+app.register_blueprint(auth.bp)
+app.register_blueprint(article.bp)

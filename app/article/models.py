@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Optional
 from sqlalchemy import ForeignKey, String, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
@@ -26,7 +27,7 @@ class Article(db.Model):
         index=True, default=lambda: datetime.now(timezone.utc)
     )
 
-    edited: Mapped[datetime] = mapped_column(index=True, nullable=True)
+    edited: Mapped[Optional[datetime]] = mapped_column(index=True, nullable=True)
 
     # relationships
 
