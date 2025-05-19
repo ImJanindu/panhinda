@@ -10,3 +10,4 @@ class Config:
     SESSION_PERMANENT=False
     SESSION_TYPE='filesystem'
     USER_DATA_PATH=os.path.join(basedir, 'static\\user_data')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
