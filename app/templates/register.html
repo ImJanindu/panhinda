@@ -9,51 +9,61 @@
         <center>Create your account</center>
     </h3>
 
-    <hr width="50%">
+    {% for msg in get_flashed_messages() %}
+    <div>{{msg}}</div>
+    {% endfor %}
 
-    <fieldset>
-        {{form.hidden_tag()}}
-        <p>
-            {{form.fullname.label}}
-            {{form.fullname()}}
-        </p>
-        <p>
-            {{form.dob.label}}
-            {{form.dob()}}
-        </p>
-        <p>
-            {{ form.gender.label }}
+    <hr width="50%">
+    <form action="/auth/register" method="post">
+        <fieldset>
+            {{form.hidden_tag()}}
             <p>
-            {% for option in form.gender %}
+                {{form.first_name.label}}
+                {{form.first_name()}}
+            </p>
+            <p>
+                {{form.last_name.label}}
+                {{form.last_name()}}
+            </p>
+            <p>
+                {{form.dob.label}}
+                {{form.dob()}}
+            </p>
+            <p>
+                {{ form.gender.label }}
+            <p>
+                {% for option in form.gender %}
                 {{option.label}}
                 {{option}}
-            {% endfor %}
+                {% endfor %}
             </p>
-        </p>
-        <p>
-            {{form.email.label}}
-            {{form.email()}}
-        </p>
-        <p>
-            {{form.phone_number.label}}
-            {{form.phone_number()}}
-        </p>
-        <p>
-            {{form.username.label}}
-            {{form.username()}}
-        </p>
-        <p>
-            {{form.password.label}}
-            {{form.password()}}
-        </p>
+            </p>
+            <p>
+                {{form.email.label}}
+                {{form.email()}}
+            </p>
+            <p>
+                {{form.phone_number.label}}
+                {{form.phone_number()}}
+            </p>
+            <p>
+                {{form.username.label}}
+                {{form.username()}}
+            </p>
+            <p>
+                {{form.password.label}}
+                {{form.password()}}
+            </p>
             {{form.verify_password.label}}
             {{form.verify_password()}}
-        </p>
-        <p>
-            {{form.submit()}}
-            <button type="reset">Clear</button>
-        </p>
-    </fieldset>
+            </p>
+            <p>
+                {{form.submit()}}
+                <button type="reset">Clear</button>
+            </p>
+        </fieldset>
+
+    </form>
 
 </legend>
 

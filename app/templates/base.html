@@ -22,10 +22,17 @@
             <a href="/create">Create</a>
         </nav>
 
+        {% if current_user.is_anonymous %}
         <div class="auth-buttons">
-            <button><a href="/login">Login</a></button>
-            <button><a href="/register">Signup</a></button>
+            <button><a href="{{ url_for('auth.login') }}">Login</a></button>
+            <button><a href="{{ url_for('auth.register') }}">Signup</a></button>
         </div>
+        {% else %}
+        <div class="welcome-note">
+            <p>Hello, {{current_user.first_name}}!</p>
+            <a href="{{ url_for('auth.logout') }}"><button>Logout</button></a>
+        </div>
+        {% endif %}
 
     </div>
 

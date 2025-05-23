@@ -1,17 +1,25 @@
 from datetime import date
 from typing import Optional
 from enum import Enum as Enum_
+from flask_login import UserMixin
+
 from sqlalchemy import String, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import login_manager
+
+@login_manager.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
 
 class GenderEnum(Enum_):
     M = "m"
     F = "f"
 
-
-class User(db.Model):
+class User(UserMixin, db.Model):
 
     __tablename__ = "user"
 
@@ -67,7 +75,6 @@ class User(db.Model):
         phone_number: str,
         phone_number_last_digits: str,
         username: str,
-        pwd: str,
         profile_picture_uri: str | None = None,
     ):
         self.first_name = first_name
@@ -78,9 +85,17 @@ class User(db.Model):
         self.phone_number = phone_number
         self.phone_number_last_digits = phone_number_last_digits
         self.username = username
-        self.password_hash = pwd
         self.profile_picture_uri = profile_picture_uri if profile_picture_uri is not None else "static/user_data/default.png"
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    
 
+    
 
 class UserInterest(db.Model):
 
