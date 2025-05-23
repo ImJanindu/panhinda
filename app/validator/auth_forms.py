@@ -1,0 +1,88 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, RadioField
+from wtforms import EmailField, BooleanField, SubmitField, DateField
+from wtforms.validators import Length, EqualTo, DataRequired, InputRequired, Regexp
+from wtforms.validators import email
+
+from app.validator.custom_validators import *
+
+
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(max=32)])
+    password = PasswordField("Password", validators=[InputRequired(), Length(max=64)])
+    remember_me = BooleanField("Remember Me")
+    submit = SubmitField("Continue")
+
+
+class LoginAuthenticationForm(FlaskForm):
+    phone_number = StringField(
+        "Phone Number",
+        validators=[Regexp(r"^(\+94|0)[0-9]{9}$", message="Invalid Phone Number"), Length(max=12)],
+    )
+    submit = SubmitField("Continue")
+
+
+class LoginVerificationCodeForm(FlaskForm):
+    code = StringField(
+        "Verificaton Code",
+        validators=[Regexp(r"^[0-9]{6}$", message="Invalid Verification Code")],
+    )
+    submit = SubmitField("Continue")
+
+
+class RegisterationForm(FlaskForm):
+    first_name = StringField(
+        "First Name",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid First Name"),
+        ],
+    )
+
+    last_name = StringField(
+        "Last Name",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid Second Name"),
+        ],
+    )
+
+    dob = DateField(
+        "Date of Birth", validators=[DataRequired(message="Cannot be Empty"), Date()]
+    )
+
+    gender = RadioField(
+        "Gender", choices=["Male", "Female"], validators=[InputRequired()]
+    )
+
+    email = EmailField(
+        "Email", validators=[email(message="Invalid Email"), DataRequired()]
+    )
+
+    phone_number = StringField(
+        "Phone Number",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^(\+94|0)[0-9]{9}$"),
+            PhoneNumber(action="VALIDATE"),
+        ],
+    )
+
+    username = StringField(
+        "Username", validators=[DataRequired(message="Cannot be Empty"), Username()]
+    )
+
+    password = StringField(
+        "Password", validators=[DataRequired(message="Cannot be Empty")]
+    )
+
+    verify_password = StringField(
+        "Retype Password",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            EqualTo("password", message="Password Verification Failed"),
+        ],
+    )
+
+    submit = SubmitField("Continue")
+

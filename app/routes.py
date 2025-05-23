@@ -1,6 +1,6 @@
 from flask import request, render_template, flash, redirect, url_for
 from app import app
-from app.froms import LoginForm, RegisterationForm
+from app.validator import *
 
 
 @app.route("/", methods=["GET"])

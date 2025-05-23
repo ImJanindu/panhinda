@@ -106,9 +106,15 @@ class ArticleLike(db.Model):
 
     # columns
 
-    article_id: Mapped[int] = mapped_column(ForeignKey("article.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    article_id: Mapped[int] = mapped_column(ForeignKey("article.id"))
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+
+    added: Mapped[datetime] = mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
 
     # relationships
 

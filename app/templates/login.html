@@ -5,26 +5,34 @@
 
 <legend>
 
-    <h3><center>Login to your account</center></h3>
+    {% for msg in get_flashed_messages() %}
+    <div>{{msg}}</div>
+    {% endfor %}
+
+    <h3>
+        <center>Login to your account</center>
+    </h3>
     <hr width="50%">
     <fieldset>
-        {{form.hidden_tag()}}
-        <p>
-            {{form.username.label}}
-            {{form.username()}}
-        </p>
-        <p>
-            {{form.password.label}}
-            {{form.password()}}
-        </p>
-        <p>
-            {{form.remember_me.label}}
-            {{form.remember_me()}}
-        </p>
-        <p>
-            {{form.submit()}}
-            <button type="reset">Clear</button>
-        </p>
+        <form action="/auth/login" method="post">
+            {{form.hidden_tag()}}
+            <p>
+                {{form.username.label}}
+                {{form.username()}}
+            </p>
+            <p>
+                {{form.password.label}}
+                {{form.password()}}
+            </p>
+            <p>
+                {{form.remember_me.label}}
+                {{form.remember_me()}}
+            </p>
+            <p>
+                {{form.submit()}}
+                <button type="reset">Clear</button>
+            </p>
+        </form>
     </fieldset>
 </legend>
 

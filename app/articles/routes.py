@@ -1,8 +1,9 @@
 from app import app
 from flask import request, render_template
+from app.articles import bp
 
 
-@app.route("/articles", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 def view_articles():
     if request.method == "GET":
         return render_template("articles.html")
@@ -10,7 +11,7 @@ def view_articles():
         return "Method not allowed"
 
 
-@app.route("/article/<int:id>", methods=["GET", "POST"])
+@bp.route("/<int:id>", methods=["GET", "POST"])
 def view_article(id: int):
     if request.method == "GET":
         return render_template("article.html")
@@ -18,7 +19,7 @@ def view_article(id: int):
         return "Method not allowed"
 
 
-@app.route("/create", methods=["GET", "POST"])
+@bp.route("/create", methods=["GET", "POST"])
 def view_create_article():
     if request.method == "GET":
         return render_template("create.html")
