@@ -21,7 +21,7 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-
+        
         user: User = db.session.scalar(
             select(User).where(User.username == form.username.data)
         )
@@ -39,12 +39,10 @@ def login():
 
     return render_template("login.html", form=form)
 
-
-@bp.route("/logout")
+@bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for("index"))
-
+    return redirect(url_for('index'))
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -54,7 +52,7 @@ def register():
 
     form = RegisterationForm()
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         if form.validate_on_submit():
 
@@ -63,10 +61,10 @@ def register():
                 last_name=form.last_name.data,
                 dob=form.dob.data,
                 email=form.email.data,
-                gender="M" if form.gender.data == "Male" else "F",
+                gender="M" if form.gender.data=='Male' else "F",
                 phone_number=get_sha256_hash(form.phone_number.data),
                 phone_number_last_digits=form.phone_number.data[-1:-4],
-                username=form.username.data,
+                username=form.username.data
             )
 
             new_user.set_password(form.password.data)
@@ -80,9 +78,10 @@ def register():
         else:
 
             for err in form.errors:
-                for e in form.errors[err]:
+                for e in form.errors[err]: 
                     flash(e)
 
             return render_template("register.html", form=form)
-
+ 
     return render_template("register.html", form=form)
+    
