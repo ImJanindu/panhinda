@@ -14,7 +14,7 @@
     </h3>
     <hr width="50%">
     <fieldset>
-        <form action="/auth/login" method="post">
+        <form action="{{ url_for('auth.login') }}?next={{ request.args.get('next') }}" method="post">
             {{form.hidden_tag()}}
             <p>
                 {{form.username.label}}

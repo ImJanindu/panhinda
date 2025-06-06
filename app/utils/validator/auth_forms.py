@@ -4,20 +4,20 @@ from wtforms import EmailField, BooleanField, SubmitField, DateField
 from wtforms.validators import Length, EqualTo, DataRequired, InputRequired, Regexp
 from wtforms.validators import email
 
-from app.validator.custom_validators import *
+from app.utils.validator.custom_validators import *
 
 
 class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired(), Length(max=32)])
+    username = StringField("Username", validators=[DataRequired(), Length(max=32), CheckUsername()])
     password = PasswordField("Password", validators=[InputRequired(), Length(max=64)])
     remember_me = BooleanField("Remember Me")
     submit = SubmitField("Continue")
-
 
 class LoginAuthenticationForm(FlaskForm):
     phone_number = StringField(
         "Phone Number",
         validators=[Regexp(r"^(\+94|0)[0-9]{9}$", message="Invalid Phone Number"), Length(max=12)],
+        filters=[str.strip,]
     )
     submit = SubmitField("Continue")
 
@@ -37,6 +37,7 @@ class RegisterationForm(FlaskForm):
             DataRequired(message="Cannot be Empty"),
             Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid First Name"),
         ],
+        filters=[str.strip,]
     )
 
     last_name = StringField(
@@ -45,6 +46,7 @@ class RegisterationForm(FlaskForm):
             DataRequired(message="Cannot be Empty"),
             Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid Second Name"),
         ],
+        filters=[str.strip,]
     )
 
     dob = DateField(
@@ -56,7 +58,7 @@ class RegisterationForm(FlaskForm):
     )
 
     email = EmailField(
-        "Email", validators=[email(message="Invalid Email"), DataRequired()]
+        "Email", validators=[email(message="Invalid Email"), DataRequired()], filters=[str.strip,]
     )
 
     phone_number = StringField(
@@ -65,11 +67,13 @@ class RegisterationForm(FlaskForm):
             DataRequired(message="Cannot be Empty"),
             Regexp(r"^(\+94|0)[0-9]{9}$"),
             PhoneNumber(action="VALIDATE"),
-        ],
+        ], 
+        filters=[str.strip,]
+        
     )
 
     username = StringField(
-        "Username", validators=[DataRequired(message="Cannot be Empty"), Username()]
+        "Username", validators=[DataRequired(message="Cannot be Empty"), UsernameAvailable()]
     )
 
     password = StringField(

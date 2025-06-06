@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Literal
 from sqlalchemy import select
 
-from app.func import get_sha256_hash
+from app.utils.func import get_sha256_hash
 from app import db
 from app.auth.models import User
 
@@ -52,13 +52,22 @@ class Date:
             raise ValidationError("Invalid Date")
 
 
-class Username:
+class UsernameAvailable:
 
     def __call__(self, form, field):
         query = select(User.username).where(User.username == field.data)
         if db.session.scalar(query) is not None:
             raise ValidationError(message="Username Not Available")
+        
 
+class CheckUsername:
+
+    def __call__(self, form, field):
+        user: User = db.session.scalar(
+            select(User.username).where(User.username == field.data)
+        )
+        if not user:
+            raise ValidationError(message="User Not Found")
 
 class Password:
 

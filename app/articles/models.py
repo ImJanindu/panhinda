@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import ForeignKey, String, CheckConstraint
+from sqlalchemy import ForeignKey, String, update
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 
@@ -29,21 +29,25 @@ class Article(db.Model):
 
     edited: Mapped[Optional[datetime]] = mapped_column(index=True, nullable=True)
 
+    category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), index=True, nullable=False)
+
     # relationships
 
     author: Mapped["User"] = relationship(back_populates="articles")
-    liked_users: Mapped["ArticleLike"] = relationship(back_populates="article")
-    commented_users: Mapped["ArticleComment"] = relationship(back_populates="article")
+    category: Mapped["Category"] = relationship(back_populates="articles")
+    likes: Mapped[list["Like"]] = relationship(back_populates="article")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="article")
 
     def __repr__(self):
         return f"<Post '{self.id} - {self.title}'>"
 
-    def __init__(self, author_id: int, title: str, description: str, body: str):
+    def __init__(self, author_id: int, title: str, description: str, body: str, category_id: int):
         self.author_id = author_id
         self.title = title
         self.description = description
         self.body = body
         self.created = datetime.now(timezone.utc)
+        self.category_id = category_id
 
 class Category(db.Model):
 
@@ -62,6 +66,10 @@ class Category(db.Model):
     )
 
     interested_users: Mapped[list["UserInterest"]] = relationship(
+        back_populates="category"
+    )
+
+    articles: Mapped[list["Article"]] = relationship(
         back_populates="category"
     )
 
@@ -100,9 +108,9 @@ class SubCategory(db.Model):
         self.category_id = category_id
 
 
-class ArticleLike(db.Model):
+class Like(db.Model):
 
-    __tablename__ = "article_like"
+    __tablename__ = "like"
 
     # columns
 
@@ -119,16 +127,16 @@ class ArticleLike(db.Model):
     # relationships
 
     user: Mapped["User"] = relationship(back_populates="liked_articles")
-    article: Mapped["Article"] = relationship(back_populates="liked_users")
+    article: Mapped["Article"] = relationship(back_populates="likes")
 
     def __init__(self, article_id, user_id):
         self.article_id=article_id
         self.user_id = user_id
 
 
-class ArticleComment(db.Model):
+class Comment(db.Model):
 
-    __tablename__ = "article_comment"
+    __tablename__ = "comment"
 
     # columns
 
@@ -140,6 +148,8 @@ class ArticleComment(db.Model):
         index=True, default=lambda: datetime.now(timezone.utc)
     )
 
+    edited: Mapped[Optional[datetime]] = mapped_column(index=True, nullable=True)
+
     article_id: Mapped[int] = mapped_column(ForeignKey("article.id"))
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
@@ -147,9 +157,10 @@ class ArticleComment(db.Model):
     # relationships
 
     user: Mapped["User"] = relationship(back_populates="commented_articles")
-    article: Mapped["Article"] = relationship(back_populates="commented_users")
+    article: Mapped["Article"] = relationship(back_populates="comments")
 
     def __init__(self, body: str, article_id: int, user_id: int):
         self.body = body
         self.article_id=article_id
         self.user_id = user_id
+    

@@ -57,8 +57,8 @@ class User(UserMixin, db.Model):
 
     articles: Mapped[list["Article"]] = relationship(back_populates="author")
     interests: Mapped[list["UserInterest"]] = relationship(back_populates="user")
-    liked_articles: Mapped[list["ArticleLike"]] = relationship(back_populates="user")
-    commented_articles: Mapped[list["ArticleComment"]] = relationship(
+    liked_articles: Mapped[list["Like"]] = relationship(back_populates="user")
+    commented_articles: Mapped[list["Comment"]] = relationship(
         back_populates="user"
     )
 
@@ -75,6 +75,7 @@ class User(UserMixin, db.Model):
         phone_number: str,
         phone_number_last_digits: str,
         username: str,
+        pwd: str,
         profile_picture_uri: str | None = None,
     ):
         self.first_name = first_name
@@ -85,6 +86,7 @@ class User(UserMixin, db.Model):
         self.phone_number = phone_number
         self.phone_number_last_digits = phone_number_last_digits
         self.username = username
+        self.password_hash = pwd
         self.profile_picture_uri = profile_picture_uri if profile_picture_uri is not None else "static/user_data/default.png"
     
     def check_password(self, password):
