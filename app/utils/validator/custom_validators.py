@@ -100,7 +100,7 @@ class PhoneNumber:
     def __init__(
         self,
         userid: int | None = None,
-        action: Literal["VALIDATE", "VERIFY"] | str = "VALIDATE",
+        action: Literal["VALIDATE", "VERIFY"] = "VALIDATE",
     ):
         self.action = action
         self.userid = userid

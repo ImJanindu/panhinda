@@ -3,3 +3,5 @@ __pycache__
 *.pyd
 test.*
 flask_session
+.env
+config.py

@@ -25,7 +25,7 @@
         {% if current_user.is_anonymous %}
         <div class="auth-buttons">
             <button><a href="{{ url_for('auth.login') }}">Login</a></button>
-            <button><a href="{{ url_for('auth.register') }}">Signup</a></button>
+            <button><a href="{{ url_for('auth.register_user_details') }}">Signup</a></button>
         </div>
         {% else %}
         <div class="welcome-note">

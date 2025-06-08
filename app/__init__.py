@@ -1,20 +1,21 @@
 from flask import Flask
-from config import Config
+from config import Config, basedir
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_mail import Mail
 
 
 app = Flask(__name__)
+
 app.config.from_object(Config)
 
 db: SQLAlchemy = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 Session(app)
-
+mail = Mail(app)
 
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Login Required'
@@ -29,3 +30,4 @@ from app import auth, articles
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(articles.bp)
+

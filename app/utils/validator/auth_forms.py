@@ -7,74 +7,39 @@ from wtforms.validators import email
 from app.utils.validator.custom_validators import *
 
 
+class UserVerificationForm(FlaskForm):
+    pass
+
+
 class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired(), Length(max=32), CheckUsername()])
+    username = StringField(
+        "Username", validators=[DataRequired(), Length(max=32), CheckUsername()]
+    )
     password = PasswordField("Password", validators=[InputRequired(), Length(max=64)])
     remember_me = BooleanField("Remember Me")
     submit = SubmitField("Continue")
 
+
 class LoginAuthenticationForm(FlaskForm):
-    phone_number = StringField(
+    """phone_number = StringField(
         "Phone Number",
-        validators=[Regexp(r"^(\+94|0)[0-9]{9}$", message="Invalid Phone Number"), Length(max=12)],
-        filters=[str.strip,]
+        validators=[
+            Regexp(r"^(\+94|0)[0-9]{9}$", message="Invalid Phone Number"),
+            Length(max=12),
+        ],
     )
-    submit = SubmitField("Continue")
+    submit = SubmitField("Continue")"""
 
 
 class LoginVerificationCodeForm(FlaskForm):
-    code = StringField(
+    """code = StringField(
         "Verificaton Code",
         validators=[Regexp(r"^[0-9]{6}$", message="Invalid Verification Code")],
     )
-    submit = SubmitField("Continue")
+    submit = SubmitField("Continue")"""
 
 
-class RegisterationForm(FlaskForm):
-    first_name = StringField(
-        "First Name",
-        validators=[
-            DataRequired(message="Cannot be Empty"),
-            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid First Name"),
-        ],
-        filters=[str.strip,]
-    )
-
-    last_name = StringField(
-        "Last Name",
-        validators=[
-            DataRequired(message="Cannot be Empty"),
-            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid Second Name"),
-        ],
-        filters=[str.strip,]
-    )
-
-    dob = DateField(
-        "Date of Birth", validators=[DataRequired(message="Cannot be Empty"), Date()]
-    )
-
-    gender = RadioField(
-        "Gender", choices=["Male", "Female"], validators=[InputRequired()]
-    )
-
-    email = EmailField(
-        "Email", validators=[email(message="Invalid Email"), DataRequired()], filters=[str.strip,]
-    )
-
-    phone_number = StringField(
-        "Phone Number",
-        validators=[
-            DataRequired(message="Cannot be Empty"),
-            Regexp(r"^(\+94|0)[0-9]{9}$"),
-            PhoneNumber(action="VALIDATE"),
-        ], 
-        filters=[str.strip,]
-        
-    )
-
-    username = StringField(
-        "Username", validators=[DataRequired(message="Cannot be Empty"), UsernameAvailable()]
-    )
+class ResetPasswordForm(FlaskForm):
 
     password = StringField(
         "Password", validators=[DataRequired(message="Cannot be Empty")]
@@ -88,5 +53,69 @@ class RegisterationForm(FlaskForm):
         ],
     )
 
-    submit = SubmitField("Continue")
+    submit = SubmitField("Reset Password")
 
+
+class RegisterationUserDetailsForm(FlaskForm):
+    first_name = StringField(
+        "First Name",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid First Name"),
+        ],
+    )
+
+    last_name = StringField(
+        "Last Name",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^([a-zA-Z]+\s?){1,}$", message="Invalid Second Name"),
+        ],
+    )
+
+    dob = DateField(
+        "Date of Birth", validators=[DataRequired(message="Cannot be Empty"), Date()]
+    )
+
+    gender = RadioField(
+        "Gender", choices=["Male", "Female"], validators=[InputRequired()]
+    )
+
+    email = EmailField(
+        "Email",
+        validators=[email(message="Invalid Email"), DataRequired()],
+        
+    )
+
+    phone_number = StringField(
+        "Phone Number",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            Regexp(r"^(\+94|0)[0-9]{9}$"),
+            PhoneNumber(action="VALIDATE"),
+        ],
+    )
+
+    submit = SubmitField("Next")
+
+
+class RegistretionUserCredentialsForm(FlaskForm):
+
+    username = StringField(
+        "Username",
+        validators=[DataRequired(message="Cannot be Empty"), UsernameAvailable()],
+    )
+
+    password = StringField(
+        "Password", validators=[DataRequired(message="Cannot be Empty"), Password()]
+    )
+
+    verify_password = StringField(
+        "Retype Password",
+        validators=[
+            DataRequired(message="Cannot be Empty"),
+            EqualTo("password", message="Password Verification Failed"),
+        ],
+    )
+
+    submit = SubmitField("Register")
