@@ -16,7 +16,7 @@ def view_articles():
 
         articles = db.session.scalars(select(Article)).all()
 
-        return render_template("home.html", articles=articles)
+        return render_template("articles/index.html", articles=articles)
 
 
 @bp.route("/<int:article_id>", methods=["GET"])
@@ -38,7 +38,7 @@ def view_article(article_id: int):
             )
 
         return render_template(
-            "read.html", article=article, comment_to_edit=comment_to_edit
+            "articles/read.html", article=article, comment_to_edit=comment_to_edit
         )
 
 
@@ -46,12 +46,12 @@ def view_article(article_id: int):
 @login_required
 def view_create_article():
     if request.method == "GET":
-        return render_template("create.html")
+        return render_template("articles/create.html")
 
 
 @bp.route("/<int:article_id>/react", methods=["POST"])
 @login_required
-def react(article_id=None):
+def react(article_id):
 
     def __add_like():
         new_like = Like(article_id=article_id, user_id=current_user.id)
@@ -77,7 +77,7 @@ def react(article_id=None):
             else:
                 __add_like()
 
-        return redirect(url_for("articles.view_article", id=article_id))
+        return redirect(url_for("articles.view_article", article_id=article_id))
 
 
 @bp.route("/<int:article_id>/comment", methods=["POST"])
@@ -89,7 +89,7 @@ def comment(article_id=None):
         body = request.form.get("body")
 
         if not body:
-            return redirect(url_for("articles.view_article", id=article_id))
+            return redirect(url_for("articles.view_article", article_id=article_id))
 
         if len(body) > 1000:
             flash("Comment must not exceed 1000 characters")
@@ -117,7 +117,7 @@ def comment(article_id=None):
                     )
                     db.session.commit()
 
-        return redirect(url_for("articles.view_article", id=article_id))
+        return redirect(url_for("articles.view_article", article_id=article_id))
 
 
 @bp.route("/<int:article_id>/delete_comment", methods=["POST"])
@@ -133,7 +133,7 @@ def delete_comment(article_id: int):
             db.session.execute(delete(Comment).where(Comment.id == int(comment_id)))
             db.session.commit()
 
-    return redirect(url_for("articles.view_article", id=article_id))
+    return redirect(url_for("articles.view_article", article_id=article_id))
 
 
 @bp.route("/<int:article_id>/edit_comment", methods=["GET", "POST"])
@@ -147,7 +147,7 @@ def edit_comment(article_id: int):
         return redirect(
             url_for(
                 "articles.view_article",
-                id=article_id,
+                article_id=article_id,
                 comment_id_to_edit=int(comment_id),
             )
         )
@@ -172,10 +172,10 @@ def edit_comment(article_id: int):
         
                 db.session.commit()
             
-            return redirect(url_for("articles.view_article", id=article_id))
+            return redirect(url_for("articles.view_article", article_id=article_id))
 
 @bp.route('<int:id>/search', methods=['GET'])
-def search(id=None):
+def search(article_id=None):
     query = request.args.get('q')
     print(query)
     return redirect(url_for('articles.view_articles'))

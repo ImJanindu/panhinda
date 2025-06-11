@@ -42,7 +42,7 @@ class LoginVerificationCodeForm(FlaskForm):
 class ResetPasswordForm(FlaskForm):
 
     password = StringField(
-        "Password", validators=[DataRequired(message="Cannot be Empty")]
+        "Password", validators=[DataRequired(message="Cannot be Empty"), Password()]
     )
 
     verify_password = StringField(

@@ -28,7 +28,7 @@ def login():
 
     if request.method == "GET":
 
-        return render_template("login.html", form=form)
+        return render_template("auth/login.html", form=form)
 
     if form.validate_on_submit():
 
@@ -75,7 +75,7 @@ def reset_password():
     form = ResetPasswordForm()
 
     if request.method == "GET":
-        return render_template("password_reset.html", form=form)
+        return render_template("auth/password_reset.html", form=form)
 
     if request.method == "POST":
 
@@ -85,6 +85,8 @@ def reset_password():
             raise InternalServerError(previous_url=url_for("auth.login"))
 
         if form.validate_on_submit():
+
+            
 
             flash('Password Reset Successfull', category='info')
             return redirect(url_for("auth.login"))
@@ -103,7 +105,7 @@ def register_user_details():
     form = RegisterationUserDetailsForm()
 
     if request.method == "GET":
-        return render_template("register/user-details.html", form=form)
+        return render_template("auth/register/user-details.html", form=form)
 
     if form.validate_on_submit():
 
@@ -137,7 +139,7 @@ def register_user_credentials():
     form = RegistretionUserCredentialsForm()
 
     if request.method == "GET":
-        return render_template("register/user-credentials.html", form=form)
+        return render_template("auth/register/user-credentials.html", form=form)
 
     if form.validate_on_submit():
 

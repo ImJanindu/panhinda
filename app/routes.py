@@ -34,4 +34,3 @@ def index():
         return render_template("index.html")
     else:
         return "Method not allowed"
-

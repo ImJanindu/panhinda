@@ -23,11 +23,13 @@ login_manager.login_message = 'Login Required'
 from app import routes
 from app.auth import routes
 from app.articles import routes
+from app.profile import routes
 from app.auth.models import *
 from app.articles.models import *
 
-from app import auth, articles
+from app import auth, articles, profile
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(articles.bp)
+app.register_blueprint(profile.bp)
 
