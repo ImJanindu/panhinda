@@ -12,14 +12,18 @@
 <h1 class="main-heading">Welcome to Panhinda</h1>
 <p class="main-sub-head">A Sri Lankan Community</p>
 
+{% if not current_user.is_authenticated %}
+
 <div class="center-container">
     <div class="textbox">
         <p>Hello</p>
     </div>
 </div>
 
-<a class ce="/register">
+<a href="{{url_for('auth.register_user_details')}}">
     <button>Get Started Now</button>
 </a>
+
+{% endif %}
 
 {% endblock %}

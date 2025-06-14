@@ -3,13 +3,12 @@ from typing import Optional
 from sqlalchemy import ForeignKey, String, update
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
+from app.auth.models import User
 
 
 class Article(db.Model):
 
     __tablename__ = "article"
-
-    # columns
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
@@ -29,7 +28,9 @@ class Article(db.Model):
 
     edited: Mapped[Optional[datetime]] = mapped_column(index=True, nullable=True)
 
-    category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), index=True, nullable=False)
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("category.id"), index=True, nullable=False
+    )
 
     # relationships
 
@@ -41,13 +42,28 @@ class Article(db.Model):
     def __repr__(self):
         return f"<Post '{self.id} - {self.title}'>"
 
-    def __init__(self, author_id: int, title: str, description: str, body: str, category_id: int):
+    def __init__(
+        self, author_id: int, title: str, description: str, body: str, category_id: int
+    ):
         self.author_id = author_id
         self.title = title
         self.description = description
         self.body = body
         self.created = datetime.now(timezone.utc)
         self.category_id = category_id
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "author_id": self.author_id,
+            "title": self.title,
+            "description": self.description,
+            "body": self.body,
+            "created": self.created.isoformat() if self.created else None,
+            "edited": self.edited.isoformat() if self.edited else None,
+            "category_id": self.category_id,
+        }
+
 
 class Category(db.Model):
 
@@ -56,7 +72,6 @@ class Category(db.Model):
     # columns
 
     id: Mapped[int] = mapped_column(primary_key=True)
-
     label: Mapped[str] = mapped_column(String(32))
 
     # relationships
@@ -69,15 +84,19 @@ class Category(db.Model):
         back_populates="category"
     )
 
-    articles: Mapped[list["Article"]] = relationship(
-        back_populates="category"
-    )
+    articles: Mapped[list["Article"]] = relationship(back_populates="category")
 
     def __repr__(self):
         return f"<Category '{self.id} - {self.label}'>"
 
     def __init__(self, label):
         self.label = label
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+        }
 
 
 class SubCategory(db.Model):
@@ -107,6 +126,13 @@ class SubCategory(db.Model):
         self.label = label
         self.category_id = category_id
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+            "category_id": self.category_id,
+        }
+
 
 class Like(db.Model):
 
@@ -130,8 +156,16 @@ class Like(db.Model):
     article: Mapped["Article"] = relationship(back_populates="likes")
 
     def __init__(self, article_id, user_id):
-        self.article_id=article_id
+        self.article_id = article_id
         self.user_id = user_id
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "article_id": self.article_id,
+            "user_id": self.user_id,
+            "added": self.added.isoformat() if self.added else None,
+        }
 
 
 class Comment(db.Model):
@@ -161,6 +195,15 @@ class Comment(db.Model):
 
     def __init__(self, body: str, article_id: int, user_id: int):
         self.body = body
-        self.article_id=article_id
+        self.article_id = article_id
         self.user_id = user_id
-    
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "body": self.body,
+            "created": self.created.isoformat() if self.created else None,
+            "edited": self.edited.isoformat() if self.edited else None,
+            "article_id": self.article_id,
+            "user_id": self.user_id,
+        }

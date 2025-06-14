@@ -6,9 +6,11 @@ from typing import Literal
 from sqlalchemy import select
 
 from app.utils.func import get_sha256_hash
-from app import db
+from app import app, db
 from app.auth.models import User
+from app.articles.models import Article
 
+from typing import Any
 
 class Date:
 
@@ -129,3 +131,12 @@ class PhoneNumber:
             if self.hashed_phone_number != db.session.scalar(query):
                 raise ValidationError(message="Phone Number Doesn't Match")
 
+class Unique:
+
+    def __init__(self, model: Any, attr: str):
+        with app.app_context():
+            self.distinct_from = db.session.scalar(select(model)).to_dict()[attr]
+
+    def __call__(self, form, field):
+        if self.distinct_from == field.data:
+            raise ValidationError(message=f"{field.label} is already have used by someone")

@@ -1,5 +1,5 @@
 from app import app, db
-from app.articles.models import Article, Comment, Like
+from app.articles.models import Article, Comment, Like, Category, SubCategory
 from flask import request, render_template, redirect, url_for, flash
 from app.articles import bp
 
@@ -8,6 +8,9 @@ from flask_login import current_user, login_required
 from datetime import datetime, timezone
 
 from app.utils.errors import ContentNotFoundError
+
+from app.utils.validator.article_forms import CreateArticleForm
+from app.utils.func import flash_errors
 
 
 @bp.route("/", methods=["GET"])
@@ -42,11 +45,34 @@ def view_article(article_id: int):
         )
 
 
-@bp.route("/create", methods=["GET"])
+@bp.route("/create", methods=["GET", "POST"])
 @login_required
 def view_create_article():
+    form = CreateArticleForm()
     if request.method == "GET":
-        return render_template("articles/create.html")
+        return render_template("articles/create.html", form=form)
+    
+    if form.validate_on_submit():
+        
+        new_article = Article(
+            author_id=current_user.id,
+            title=form.title.data,
+            description=form.description.data,
+            body=form.body.data,
+            category_id=db.session.scalar(select(SubCategory.category_id).where(SubCategory.label==form.category.data))
+        )
+        
+        db.session.add(new_article)
+
+        db.session.commit()
+
+        return redirect(url_for('articles.view_article', article_id=new_article.id))
+
+    else :
+        flash(flash_errors(form))
+
+    return redirect(url_for('index'))
+        
 
 
 @bp.route("/<int:article_id>/react", methods=["POST"])
@@ -67,15 +93,17 @@ def react(article_id):
         article_id = request.form.get("article_id")
         likes = db.session.get(Article, int(article_id)).likes
 
-        if not likes:
-            __add_like()
-        else:
-            for like in likes:
-                if int(current_user.id) == like.user.id:
-                    __remove_like()
-                    break
-            else:
+        if current_user.id != db.session.get(Article, int(article_id)).author.id:
+
+            if not likes:
                 __add_like()
+            else:
+                for like in likes:
+                    if int(current_user.id) == like.user.id:
+                        __remove_like()
+                        break
+                else:
+                    __add_like()
 
         return redirect(url_for("articles.view_article", article_id=article_id))
 

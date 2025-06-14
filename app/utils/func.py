@@ -12,6 +12,7 @@ def get_sha256_hash(data: str) -> str:
 def flash_errors(form: FlaskForm) -> None:
     for field, errors in form.errors.items():
         for err in errors:
+            print(err)
             flash(err, category='warning')
 
 def remove_url_suffix(url: str, suffix: str|list[str]) -> str:

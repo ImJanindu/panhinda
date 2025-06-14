@@ -83,7 +83,18 @@ class User(UserMixin, db.Model):
         self.email = email
         self.phone_number = phone_number
         self.phone_number_last_digits = phone_number_last_digits
-        self.profile_picture_uri = profile_picture_uri if profile_picture_uri is not None else "static/user_data/default.png"
+        self.profile_picture_uri = profile_picture_uri if profile_picture_uri is not None else "user_data/profiles/default.png"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "date_of_birth": self.date_of_birth.isoformat() if self.date_of_birth else None,
+            "gender": self.gender.value if self.gender else None,
+            "username": self.username,
+            "profile_picture_uri": self.profile_picture_uri,
+        }
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -112,3 +123,9 @@ class UserInterest(db.Model):
     def __init__(self, category_id: int, user_id: int):
         self.category_id = category_id
         self.user_id = user_id
+
+    def to_dict(self):
+        return {
+            "category_id": self.category_id,
+            "user_id": self.user_id,
+        }
