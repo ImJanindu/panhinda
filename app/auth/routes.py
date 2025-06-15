@@ -1,5 +1,5 @@
-from app import db
-from flask import request, render_template, redirect, flash, url_for, session
+from app import app, db, mail
+from flask import request, render_template, redirect, flash, url_for, session, abort
 from flask_login import current_user, login_user
 from app.auth.models import User
 from app.auth import bp
@@ -7,9 +7,13 @@ from app.auth import bp
 from sqlalchemy import select
 from flask_login import logout_user
 from urllib.parse import urlsplit
+from flask_mail import Message
+from datetime import datetime, timezone
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 from app.utils.validator import (
     LoginForm,
+    LoginVerificationForm,
     RegisterationUserDetailsForm,
     ResetPasswordForm,
     RegistretionUserCredentialsForm,
@@ -17,6 +21,32 @@ from app.utils.validator import (
 from app.utils.func import get_sha256_hash, flash_errors, remove_url_suffix
 from app.utils.errors import InternalServerError
 
+
+def send_email_confirmation(user):
+
+    token = user.get_email_verification_token()
+
+    SUBJECT = "Sending confirmation link"
+
+    mail_conf_mail = Message(
+        SUBJECT, sender=app.config.get("MAIL_USERNAME"), recipients=[user.email]
+    )
+
+    mail_conf_mail.html = render_template(
+        "auth/emails/conf_email.html",
+        user_name=user.first_name,
+        link=url_for("auth.verify_email", token=token, _external=True),
+        current_year=datetime.now(timezone.utc).year,
+    )
+
+    print(f'\n\n Sent : {token}\n\n')
+
+    try:
+        mail.send(mail_conf_mail)
+    except:
+        return False
+    
+    return True
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -28,9 +58,12 @@ def login():
 
     if request.method == "GET":
 
-        return render_template("auth/login.html", form=form)
+        return render_template("auth/login/index.html", form=form)
 
     if form.validate_on_submit():
+
+        session['remember_me'] = form.remember_me.data
+        session['next'] = request.args.get('next')
 
         user: User = db.session.scalar(
             select(User).where(User.username == form.username.data)
@@ -41,10 +74,69 @@ def login():
             session["attampted_user"] = form.username.data
             flash_errors(form)
             return redirect(url_for("auth.login"))
+        
+        session['login_user'] = user
+        return redirect(url_for('auth.login_user_verification'))
+    
+    else:
+        flash_errors(form)
+        return redirect(url_for("auth.login"))
+    
+@bp.route('/user-verification', methods=['GET', 'POST'])
+def login_user_verification():
+    
+    form = LoginVerificationForm()
+    user: User = session.get('login_user')
+    
+    if request.method == 'GET':
 
-        login_user(user, remember=form.remember_me.data)
+        if not session.get('auth_attempts', False):
+            user.send_otp()
+        
+        if session.get('auth_attempts') == 3:
+            
+            session.pop('auth_attempts')
+            flash('Authentication Failed')
+            session.pop('login_user')
+        
+            return redirect(url_for('auth.login'))
+        
 
-        next_page = request.args.get("next", False)
+        session['auth_attempts'] = session.get('auth_attempts', 0) + 1
+        
+        print("auth attempts : ", session.get('auth_attempts', False))
+
+        
+        return render_template('auth/login/user_verification.html', form=form)
+    
+    if not form.validate_on_submit():
+        if session.get('auth_attempts') != 3 :
+            flash(f'You have   {3 - session['auth_attempts']  } tries left')
+        flash_errors(form)
+        return redirect(url_for('auth.login_user_verification'))
+
+    state, flag = user.verify_otp(form.otp.data) 
+    print(state, flag)
+
+    if not state:
+
+        match flag:
+            case User.TIME_OUT:
+                flash("Authentication Failed! OTP Expired")
+                return redirect('auth.login')
+            case User.NOT_MATCHED:
+                flash("OTP Incorrect!")
+
+        if session.get('auth_attempts') != 3 :
+            flash(f'You have   {3 - session['auth_attempts']  } tries left')
+        return redirect(url_for('auth.login_user_verification'))
+        
+    else:
+        session.pop('auth_attempts')
+        session.pop('login_user')
+        login_user(user, remember=session.pop('remember_me'))
+        
+        next_page = session.pop('next')
 
         if next_page == "None":
             return redirect(url_for("index"))
@@ -57,11 +149,7 @@ def login():
                 next_page = url_for("index")
 
             return redirect(next_page)
-
-    else:
-        flash_errors(form)
-        return redirect(url_for("auth.login"))
-
+   
 
 @bp.route("/logout")
 def logout():
@@ -86,9 +174,7 @@ def reset_password():
 
         if form.validate_on_submit():
 
-            
-
-            flash('Password Reset Successfull', category='info')
+            flash("Password Reset Successfull", category="info")
             return redirect(url_for("auth.login"))
 
         else:
@@ -113,7 +199,7 @@ def register_user_details():
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             dob=form.dob.data,
-            email=get_sha256_hash(form.email.data),
+            email=form.email.data,
             gender="M" if form.gender.data == "Male" else "F",
             phone_number=get_sha256_hash(form.phone_number.data),
             phone_number_last_digits=form.phone_number.data[-1:-4],
@@ -143,20 +229,55 @@ def register_user_credentials():
 
     if form.validate_on_submit():
 
-        if new_user := session.pop('new_user', False):
-                
+        new_user: User = session.get("new_user")
+
+        if new_user:
+
             new_user.username = form.username.data
             new_user.set_password(form.password.data)
-            db.session.add(new_user)
-            db.session.commit()
-
-            return redirect(url_for("auth.login"))
+            
+            if send_email_confirmation(new_user):
+                flash("Email Confirmation link sent Successfully. Please check your emails!")
+            else:
+                flash("Email Verification Failed!")
+            
+            try:
+                db.session.add(new_user)
+                db.session.commit()
+            except:
+                flash("Failed to Create the Account!")
+                abort(405)
+            else:
+                flash("Account Created Successfully")
+            
+            return redirect(url_for('auth.login'))
 
         else:
-            raise InternalServerError(previous_url=url_for('auth.register_user_details'))
+            raise InternalServerError(
+                previous_url=url_for("auth.register_user_details")
+            )
 
     else:
 
         flash_errors(form)
 
         return redirect(url_for("auth.register_user_credentials"))
+    
+
+@bp.route("verify-email/<string:token>")
+def verify_email(token):
+
+    confirmed = False
+
+    if token:
+
+        print(f'\n\n verify : {token}\n\n')
+
+        if email := User.verify_email_token(token):
+            user = db.session.scalar(select(User).where(User.email==email))
+            user.verified = True
+            db.session.commit()
+
+            confirmed = True
+
+    return render_template("auth/emails/sent_email_state.html", confirmed=confirmed)

@@ -14,30 +14,6 @@
 
 <body>
 
-    <div class="navbar">
-
-        <h1 class="logo"><a href="{{ url_for('index') }}">Panhinda</a></h1>
-
-        <nav class="nav-links">
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href=" {{ url_for('articles.view_articles') }}">Articles</a>
-            <a href="{{ url_for('articles.view_create_article') }}">Create</a>
-        </nav>
-
-        {% if current_user.is_anonymous %}
-        <div class="auth-buttons">
-            <button><a href="{{ url_for('auth.login') }}">Login</a></button>
-            <button><a href="{{ url_for('auth.register_user_details') }}">Signup</a></button>
-        </div>
-        {% else %}
-        <div class="welcome-note">
-            <p>Hello, <a href="{{ url_for('profile.view_profile') }}">{{ current_user.first_name }}</a>!</p>
-            <a href="{{ url_for('auth.logout') }}"><button>Logout</button></a>
-        </div>
-        {% endif %}
-
-    </div>
-    
     {% block body %}{% endblock %}
 
 </body>

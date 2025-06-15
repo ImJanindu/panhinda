@@ -2,7 +2,7 @@ __pycache__
 *.pyc 
 *.pyd
 test.*
-flask_session
+flask_session/*
 .env
 config.py
 db_populate.py

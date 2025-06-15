@@ -16,7 +16,7 @@ class CreateArticleForm(FlaskForm):
         validators=[
             Length(
                 min=5, max=120, message="Title should be between 5 to 120 characters"
-            ), 
+            ),
             Unique(Article, 'title')
         ],
     )

@@ -20,23 +20,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Continue")
 
 
-class LoginAuthenticationForm(FlaskForm):
-    """phone_number = StringField(
-        "Phone Number",
+class LoginVerificationForm(FlaskForm):
+    otp = StringField(
+        "6 Digit OTP, We Sent to your Email",
         validators=[
-            Regexp(r"^(\+94|0)[0-9]{9}$", message="Invalid Phone Number"),
-            Length(max=12),
+            Regexp(r'[0-9]{6}', message='Invalid Code')
         ],
     )
-    submit = SubmitField("Continue")"""
-
-
-class LoginVerificationCodeForm(FlaskForm):
-    """code = StringField(
-        "Verificaton Code",
-        validators=[Regexp(r"^[0-9]{6}$", message="Invalid Verification Code")],
-    )
-    submit = SubmitField("Continue")"""
+    submit = SubmitField("Authenticate")
 
 
 class ResetPasswordForm(FlaskForm):

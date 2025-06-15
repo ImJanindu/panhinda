@@ -20,6 +20,8 @@ mail = Mail(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Login Required'
 
+
+
 from app import routes
 from app.auth import routes
 from app.articles import routes
@@ -33,3 +35,7 @@ app.register_blueprint(auth.bp)
 app.register_blueprint(articles.bp)
 app.register_blueprint(profile.bp)
 
+
+from app.utils.func import utc_to_local
+
+app.jinja_env.filters['utc_to_local'] = utc_to_local

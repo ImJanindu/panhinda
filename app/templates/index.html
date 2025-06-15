@@ -4,26 +4,69 @@
 
 {% block body %}
 
-<form action="{{ url_for('articles.global_search') }}" method="get" class="search">
-    <input type="search" name="q" placeholder="Search articles..." />
-    <button type="submit" class="srch">Search</button>
-</form>
+    {% include 'partials/navbar.html' %}
+    {% include 'partials/search_bar.html' %}
 
-<h1 class="main-heading">Welcome to Panhinda</h1>
-<p class="main-sub-head">A Sri Lankan Community</p>
+    <h1 class="main-heading">Welcome to Panhinda</h1>
+    <p class="main-sub-head">A Sri Lankan Community</p>
 
-{% if not current_user.is_authenticated %}
+    {% if not current_user.is_authenticated %}
 
-<div class="center-container">
-    <div class="textbox">
-        <p>Hello</p>
-    </div>
-</div>
+        <div class="center-container">
+            <div class="textbox">
+                <p>Hello</p>
+            </div>
+        </div>
 
-<a href="{{url_for('auth.register_user_details')}}">
-    <button>Get Started Now</button>
-</a>
+        <a href="{{url_for('auth.register_user_details')}}">
+            <button>Get Started Now</button>
+        </a>
 
-{% endif %}
+    {% else %}
+
+        <div class="option-container" id="write">
+            <a href="{{ url_for('articles.view_create_article') }}">
+                <div class="option-icon-wrapper">
+                    <i class="fa fa-pencil fa-4x"></i>
+                </div>
+                <div class="option-caption">
+                    <h2>Write</h2>
+                </div>
+                <div class="option-description">
+                    Create a New Post and Share
+                </div>
+            </a>
+        </div>
+
+        <div class="option-container" id="explorer">
+            <a href="{{ url_for('articles.view_articles') }}">
+                <div class="option-icon-wrapper">
+                    <i class="fa fa-search fa-4x"></i>
+                </div>
+                <div class="option-caption">
+                    <h2>Explorer</h2>
+                </div>
+                <div class="option-description">
+                    Search for Something Interesting
+                </div>
+            </a>
+        </div>
+
+        <div class="option-container" id="read">
+            <a href="{{ url_for('articles.view_article', article_id=1) }}">
+                <div class="option-icon-wrapper">
+                    <i class="fa fa-book-open-reader fa-4x"></i>
+                </div>
+                <div class="option-caption">
+                    <h2>Read</h2>
+                </div>
+                <div class="option-description">
+                    Let Us Suggest to You
+                </div>
+            </a>
+        </div>
+
+
+    {% endif %}
 
 {% endblock %}

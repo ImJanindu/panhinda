@@ -8,7 +8,6 @@ from sqlalchemy import select
 from app.utils.func import get_sha256_hash
 from app import app, db
 from app.auth.models import User
-from app.articles.models import Article
 
 from typing import Any
 
@@ -135,8 +134,8 @@ class Unique:
 
     def __init__(self, model: Any, attr: str):
         with app.app_context():
-            self.distinct_from = db.session.scalar(select(model)).to_dict()[attr]
-
+            self.used_attr_values = [article.to_dict()[attr] for article in db.session.scalars(select(model)).all()]
+    
     def __call__(self, form, field):
-        if self.distinct_from == field.data:
+        if field.data in self.used_attr_values:
             raise ValidationError(message=f"{field.label} is already have used by someone")

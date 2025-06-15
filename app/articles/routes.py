@@ -1,6 +1,6 @@
 from app import app, db
 from app.articles.models import Article, Comment, Like, Category, SubCategory
-from flask import request, render_template, redirect, url_for, flash
+from flask import request, render_template, redirect, url_for, flash, abort
 from app.articles import bp
 
 from sqlalchemy import select, delete, update
@@ -30,7 +30,7 @@ def view_article(article_id: int):
         article = db.session.get(Article, article_id)
         
         if article is None : 
-            raise ContentNotFoundError
+            abort(404)
 
         comment_to_edit = None
 
@@ -71,7 +71,7 @@ def view_create_article():
     else :
         flash(flash_errors(form))
 
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.create'))
         
 
 
