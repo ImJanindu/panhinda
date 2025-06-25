@@ -18,11 +18,11 @@ from app.utils.validator import (
     ResetPasswordForm,
     RegistretionUserCredentialsForm,
 )
-from app.utils.func import get_sha256_hash, flash_errors, remove_url_suffix
+from app.utils.func import get_sha256_hash, flash_errors, remove_url_suffix, session_get_or_404
 from app.utils.errors import InternalServerError
 
 
-def send_email_confirmation(user):
+def send_email_confirmation(user: User):
 
     token = user.get_email_verification_token()
 
@@ -70,7 +70,7 @@ def login():
         )
 
         if not user.check_password(form.password.data):
-            flash("User Couldn't be Authorized")
+            flash("User Couldn't be Authorized", category='error')
             session["attampted_user"] = form.username.data
             flash_errors(form)
             return redirect(url_for("auth.login"))
@@ -86,17 +86,17 @@ def login():
 def login_user_verification():
     
     form = LoginVerificationForm()
-    user: User = session.get('login_user')
+    user: User = session_get_or_404('login_user')
     
     if request.method == 'GET':
 
         if not session.get('auth_attempts', False):
             user.send_otp()
         
-        if session.get('auth_attempts') == 3:
+        if session.get('auth_attempts', 0) == 3:
             
             session.pop('auth_attempts')
-            flash('Authentication Failed')
+            flash('Authentication Failed', category='error')
             session.pop('login_user')
         
             return redirect(url_for('auth.login'))
@@ -104,31 +104,27 @@ def login_user_verification():
 
         session['auth_attempts'] = session.get('auth_attempts', 0) + 1
         
-        print("auth attempts : ", session.get('auth_attempts', False))
-
-        
         return render_template('auth/login/user_verification.html', form=form)
     
     if not form.validate_on_submit():
-        if session.get('auth_attempts') != 3 :
-            flash(f'You have   {3 - session['auth_attempts']  } tries left')
+        if session_get_or_404('auth_attempts') != 3 :
+            flash(f'You have   {3 - session['auth_attempts']  } tries left', category='error')
         flash_errors(form)
         return redirect(url_for('auth.login_user_verification'))
 
     state, flag = user.verify_otp(form.otp.data) 
-    print(state, flag)
 
     if not state:
 
         match flag:
             case User.TIME_OUT:
-                flash("Authentication Failed! OTP Expired")
+                flash("Authentication Failed! OTP Expired", category='error')
                 return redirect('auth.login')
             case User.NOT_MATCHED:
-                flash("OTP Incorrect!")
+                flash("OTP Incorrect!", category='error')
 
-        if session.get('auth_attempts') != 3 :
-            flash(f'You have   {3 - session['auth_attempts']  } tries left')
+        if session_get_or_404('auth_attempts') != 3 :
+            flash(f'You have   {3 - session['auth_attempts']  } tries left', category='error')
         return redirect(url_for('auth.login_user_verification'))
         
     else:
@@ -174,6 +170,8 @@ def reset_password():
 
         if form.validate_on_submit():
 
+
+
             flash("Password Reset Successfull", category="info")
             return redirect(url_for("auth.login"))
 
@@ -199,12 +197,11 @@ def register_user_details():
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             dob=form.dob.data,
-            email=form.email.data,
             gender="M" if form.gender.data == "Male" else "F",
+            email=form.email.data,
             phone_number=get_sha256_hash(form.phone_number.data),
             phone_number_last_digits=form.phone_number.data[-1:-4],
         )
-
         session["new_user"] = new_user
 
         return redirect(url_for("auth.register_user_credentials"))
@@ -229,7 +226,7 @@ def register_user_credentials():
 
     if form.validate_on_submit():
 
-        new_user: User = session.get("new_user")
+        new_user: User = session_get_or_404("new_user")
 
         if new_user:
 
@@ -237,18 +234,19 @@ def register_user_credentials():
             new_user.set_password(form.password.data)
             
             if send_email_confirmation(new_user):
-                flash("Email Confirmation link sent Successfully. Please check your emails!")
+                flash("Email Confirmation link sent Successfully. Please check your emails!", category='success')
             else:
-                flash("Email Verification Failed!")
+                flash("Email Verification Failed!", category='error')
             
             try:
                 db.session.add(new_user)
+                db.session.flush() # flush to assign id to the user without commiting
                 db.session.commit()
             except:
                 flash("Failed to Create the Account!")
-                abort(405)
+                abort(500)
             else:
-                flash("Account Created Successfully")
+                flash("Account Created Successfully", category='success')
             
             return redirect(url_for('auth.login'))
 
@@ -276,6 +274,7 @@ def verify_email(token):
         if email := User.verify_email_token(token):
             user = db.session.scalar(select(User).where(User.email==email))
             user.verified = True
+            user.email == get_sha256_hash(email)
             db.session.commit()
 
             confirmed = True

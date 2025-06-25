@@ -47,9 +47,7 @@ class User(UserMixin, db.Model):
 
     gender: Mapped[GenderEnum] = mapped_column(Enum(GenderEnum), nullable=False)
 
-    email: Mapped[str] = mapped_column(
-        String(256), index=True, unique=True, nullable=False
-    )
+    email: Mapped[str] = mapped_column(String(256), nullable=False, unique=True, index=True)
 
     phone_number: Mapped[str] = mapped_column(
         String(256), index=True, unique=True, nullable=False

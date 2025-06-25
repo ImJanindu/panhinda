@@ -1,7 +1,14 @@
+/* Tailwind CSS font-family configuration example:
+
+In your tailwind.config.js:
+
+
+
+*/
 
 /* latin */
 @font-face {
-  font-family: 'Caveat Brush';
+  font-family: 'Caveat_Brush';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -11,7 +18,7 @@
 
 /* latin */
 @font-face {
-  font-family: 'Fira Mono';
+  font-family: 'Fira_Mono';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -20,7 +27,7 @@
 }
 /* latin */
 @font-face {
-  font-family: 'Fira Mono';
+  font-family: 'Fira_Mono';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
@@ -29,7 +36,7 @@
 }
 /* latin */
 @font-face {
-  font-family: 'Fira Mono';
+  font-family: 'Fira_Mono';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -92,7 +99,7 @@
 }
 /* latin */
 @font-face {
-  font-family: 'Kode Mono';
+  font-family: 'Kode_Mono';
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
@@ -110,7 +117,7 @@
 }
 /* latin */
 @font-face {
-  font-family: 'Noto Sans JP';
+  font-family: 'Noto_Sans_JP';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;

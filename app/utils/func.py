@@ -19,8 +19,7 @@ def get_sha256_hash(data: str) -> str:
 def flash_errors(form: FlaskForm) -> None:
     for field, errors in form.errors.items():
         for err in errors:
-            print(err)
-            flash(err, category="warning")
+            flash(err, category="error")
 
 
 def remove_url_suffix(url: str, suffix: str | list[str]) -> str:
@@ -40,8 +39,9 @@ def utc_to_local(dt: datetime, format: str | None = None):
     return local_dt if format is None else local_dt.strftime(format) 
 
 
-def session_get_or_403(key: str):
+def session_get_or_404(key: str):
+    print('here')
     if data := session.get(key, False):
         return data
-    abort(403)
+    abort(404)
     

@@ -69,7 +69,7 @@ def view_create_article():
         return redirect(url_for('articles.view_article', article_id=new_article.id))
 
     else :
-        flash(flash_errors(form))
+        flash_errors(form)
 
     return redirect(url_for('auth.create'))
         
@@ -120,7 +120,7 @@ def comment(article_id=None):
             return redirect(url_for("articles.view_article", article_id=article_id))
 
         if len(body) > 1000:
-            flash("Comment must not exceed 1000 characters")
+            flash("Comment must not exceed 1000 characters", category='error')
 
         else:
 
@@ -190,7 +190,7 @@ def edit_comment(article_id: int):
             body = request.form.get("body")
 
             if len(body) > 1000:
-                flash("Comment must not exceed 1000 characters")
+                flash("Comment must not exceed 1000 characters", category='error')
 
             else:
         
