@@ -22,7 +22,7 @@ class LoginForm(FlaskForm):
 
 class LoginVerificationForm(FlaskForm):
     otp = StringField(
-        "6 Digit OTP, We Sent to your Email",
+        "Enter 6 Digit OTP Sent to your Email",
         validators=[
             Regexp(r'[0-9]{6}', message='Invalid Code')
         ],
