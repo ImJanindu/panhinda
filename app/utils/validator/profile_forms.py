@@ -31,5 +31,5 @@ class AddInterestsForm(FlaskForm):
         self.interests.choices = [(interest.id, interest.label) for interest in categories if interest.id not in current_user_interested_categories]
 
         
-
+# nothing
     
