@@ -6,3 +6,4 @@ flask_session/*
 .env
 config.py
 db_populate.py
+app.db
